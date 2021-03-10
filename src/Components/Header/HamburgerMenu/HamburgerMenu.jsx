@@ -1,29 +1,38 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import styled from 'styled-components';
 import Nav from '../Components/Nav';
 import { ReactComponent as HamburgerBar } from '../../../Images/Assets/hamburgerBar.svg';
 import { ReactComponent as Exit } from '../../../Images/Assets/exit.svg';
 
-const HamburgerMenu = ({ name }) => {
-  const [handleMenu, setHandleMenu] = useState(false);
+const HamburgerMenu = ({ history, name }) => {
+  const [openMenu, setOpenMenu] = useState(false);
+  const [hamFocused, setHamFocused] = useState('/');
+
+  const handleHamClick = (id) => {
+    history.push(id);
+    setHamFocused(id);
+    setOpenMenu(false);
+  };
+
   return (
     <HamburgerMenuWrapper className={name}>
-      <HamburgerBarWrapper onClick={() => setHandleMenu(true)}>
+      <HamburgerBarWrapper onClick={() => setOpenMenu(true)}>
         <HamburgerBar />
       </HamburgerBarWrapper>
-      {handleMenu && (
+      {openMenu && (
         <NavBg>
           <NavExit>
-            <ExitWrapper onClick={() => setHandleMenu(false)}>
+            <ExitWrapper onClick={() => setOpenMenu(false)}>
               <Exit />
             </ExitWrapper>
           </NavExit>
           <Nav
             name={'hamburger'}
-            type={'column'}
-            handleMenu={handleMenu}
-            setHandleMenu={setHandleMenu}
+            openMenu={openMenu}
+            setOpenMenu={setOpenMenu}
+            hamFocused={hamFocused}
+            handleHamClick={handleHamClick}
           />
         </NavBg>
       )}

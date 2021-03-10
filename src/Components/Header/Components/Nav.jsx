@@ -4,34 +4,40 @@ import styled from 'styled-components';
 
 const MENU_LIST = {
   menu: [
-    { menuTitle: '서비스', goTo: '/' },
-    { menuTitle: '회원가입', goTo: '/sign-up' },
-    { menuTitle: '로그인', goTo: '/login' },
+    { id: 1, menuTitle: '서비스', goTo: '/' },
+    { id: 2, menuTitle: '회원가입', goTo: '/sign-up' },
+    { id: 3, menuTitle: '로그인', goTo: '/login' },
   ],
 };
 
-const Nav = ({ history, type, setHandleMenu, name }) => {
-  const [focused, setfocused] = useState(0);
-  const handleClick = (idx) => {
-    console.log(name);
-    setfocused(idx);
-    history.push(MENU_LIST.menu[idx].goTo);
-    name !== 'nav' && setHandleMenu(false);
+const Nav = ({ history, name, hamFocused, handleHamClick }) => {
+  const [navFocused, setNavFocused] = useState('/');
+
+  const handleClick = (id) => {
+    if (name === 'hamburger') {
+      handleHamClick(id);
+      history.push(id);
+    } else {
+      setNavFocused(id);
+      history.push(id);
+    }
   };
 
-  console.log(focused);
-
   return (
-    <NavWrapper className={name} type={type}>
+    <NavWrapper className={name}>
       {MENU_LIST.menu.map((menu, idx) => {
         return (
           <>
             <Menu
-              type={type}
               key={idx}
+              className={name}
               to={menu.goTo}
-              colored={focused === idx}
-              onClick={() => handleClick(idx)}
+              colored={
+                name === 'nav'
+                  ? navFocused === menu.goTo
+                  : hamFocused === menu.goTo
+              }
+              onClick={() => handleClick(menu.goTo)}
             >
               {menu.menuTitle}
             </Menu>
@@ -45,12 +51,10 @@ const Nav = ({ history, type, setHandleMenu, name }) => {
 export default withRouter(Nav);
 
 const NavWrapper = styled.div`
-  width: ${(props) => (props.type === 'column' ? '' : '50%')};
+  width: 50%;
   height: 100%;
   display: flex;
-  flex-direction: ${(props) => (props.type === 'column' ? 'column' : '')};
-  justify-content: ${(props) =>
-    props.type === 'column' ? 'flex-start' : 'flex-end'};
+  justify-content: flex-end;
   align-items: center;
 
   &.nav {
@@ -61,22 +65,39 @@ const NavWrapper = styled.div`
       display: flex;
     }
   }
+
+  &.hamburger {
+    width: 100%;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
 `;
 
 const Menu = styled.div`
-  margin-left: ${(props) => (props.type === 'column' ? '' : '50px')};
-  margin-top: ${(props) => (props.type === 'column' ? '30px' : '')};
-  color: ${(props) =>
-    props.colored
-      ? ({ theme }) => theme.Color.grey[500]
-      : ({ theme }) => theme.Color.black};
-
+  margin-left: 50px;
   cursor: pointer;
 
   @media (max-width: 642px) {
-    font-size: ${(props) => (props.type === 'column' ? '25px' : '12px')};
+    font-size: 12px;
   }
   @media (min-width: 643px) {
     font-size: 16px;
+  }
+
+  &.nav {
+    color: ${(props) =>
+      props.colored
+        ? ({ theme }) => theme.Color.grey[500]
+        : ({ theme }) => theme.Color.black};
+  }
+
+  &.hamburger {
+    margin: 50px 0 0 0;
+    font-size: 25px;
+
+    color: ${(props) =>
+      props.colored
+        ? ({ theme }) => theme.Color.grey[500]
+        : ({ theme }) => theme.Color.black};
   }
 `;
