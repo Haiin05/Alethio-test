@@ -1,10 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { withRouter } from 'react-router-dom';
-import axios from 'axios';
+import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import Input from '../../Components/Input/Input';
 import Btn from '../../Components/Button/Btn';
-import { API } from '../../config';
 
 const inputData = {
   data: [
@@ -35,8 +34,7 @@ const inputData = {
   ],
 };
 
-const Signup = ({ history }) => {
-  /* input value */
+const Signup = ({ history, signUpRequestAction, userToken }) => {
   const [inputs, setInputs] = useState({
     email: '',
     pw: '',
@@ -45,18 +43,15 @@ const Signup = ({ history }) => {
   });
   const { email, pw, rePw, mobile } = inputs;
 
-  /* check focused input */
   const [focusedInput, setFocusedInput] = useState(null);
 
-  /* useRef */
   const inputRef = useRef(null);
+  const dispatch = useDispatch();
 
-  /* validation check */
   const checkEmail = email.includes('@') && email.includes('.');
   const checkPw = pw.length > 8 && pw.length <= 15;
   const checkRePw = pw === rePw;
 
-  /* function */
   const handleValue = (e, idx) => {
     const { id, value } = e.target;
     const handleInputs = { ...inputs, [id]: value };
@@ -66,7 +61,6 @@ const Signup = ({ history }) => {
   };
 
   const handleBlur = (idx) => {
-    console.log('blur', idx);
     idx === 0 && handleEmail(idx);
   };
 
@@ -78,45 +72,30 @@ const Signup = ({ history }) => {
     !checkPw && setFocusedInput(idx);
   };
 
-  const isValidAll = () => {
-    !checkEmail && alert('올바른 이메일 형식으로 입력해 주세요');
-    inputRef.current && inputRef.current.children[0].focus();
-
-    !checkPw && alert('비밀번호를 최소 8자, 최대 15자로 만들어 주세요');
-    !checkRePw && alert('비밀번호가 일치하지 않습니다');
-
-    //return checkEmail && checkPw && checkRePw !==
-  };
-
-  const handleSignup = async (idx) => {
-    isValidAll(idx);
-
-    let options = {
-      method: 'POST',
-      url: `${API}/sign-up`,
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: email,
-        password: pw,
-        mobile: mobile,
-      }),
-    };
-
-    try {
-      let response = await axios(options);
-      let responseOK = response && response.status === 200;
-
-      responseOK &&
-        response.token &&
-        localStorage.setItem('token', response.data.token);
-      history.push('/');
-    } catch (error) {
-      console.error(error);
+  const handleSignup = () => {
+    if (!checkEmail) {
+      return (
+        alert('올바른 이메일 형식으로 입력해 주세요'),
+        inputRef.current && inputRef.current.children[0].focus()
+      );
     }
+    if (!checkPw) {
+      return alert('비밀번호를 최소 8자, 최대 15자로 만들어 주세요');
+    }
+    if (!checkRePw) {
+      return alert('비밀번호가 일치하지 않습니다');
+    }
+    dispatch(
+      signUpRequestAction({
+        email,
+        pw,
+        mobile,
+      }),
+    );
   };
+  if (userToken) {
+    history.push('/');
+  }
 
   return (
     <SignupWrapper ref={inputRef}>

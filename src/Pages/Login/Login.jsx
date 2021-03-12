@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { withRouter } from 'react-router-dom';
+import axios from 'axios';
 import styled from 'styled-components';
+import Input from '../../Components/Input/Input';
 import Btn from '../../Components/Button/Btn';
 import { API } from '../../config';
 
@@ -37,7 +39,6 @@ const Login = ({ history }) => {
   const checkPw = pw.length > 8 && pw.length < 15;
 
   /* function */
-
   const handleValue = (e, idx) => {
     const { id, value } = e.target;
     const handleInputs = { ...inputs, [id]: value };
@@ -46,7 +47,6 @@ const Login = ({ history }) => {
   };
 
   const handleValidation = (idx) => {
-    console.log('blur');
     idx === 0 && handleEmail(idx);
     idx === 1 && handlePw(idx);
   };
@@ -64,27 +64,37 @@ const Login = ({ history }) => {
     !checkPw && alert('비밀번호를 최소 8자, 최대 15자로 만들어 주세요');
   };
 
-  const handleLogin = (idx) => {
+  const handleLogin = async (idx) => {
     isValidAll(idx);
 
-    fetch(`${API}/login`, {
+    let options = {
       method: 'POST',
-      body: JSON.stringify({
+      url: `${API}/login`,
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      data: {
         email: email,
         password: pw,
-      }),
-    })
-      .then((response) => response.json())
-      .then((result) => {
-        if (result.message === 'SUCCESS') {
-          localStorage.setItem('token', result.token);
-          alert('로그인 성공!');
-          history.push('/');
-        } else {
-          alert('비밀번호를 확인해 주세요');
-        }
-      });
+      },
+    };
+
+    try {
+      let response = await axios(options);
+      let responseOK = response && response.status === 200;
+      if (response.message === 'SUCCESS') {
+        localStorage.setItem('token', response.token);
+        alert('로그인 성공!');
+        history.push('/');
+      } else {
+        alert('비밀번호를 확인해 주세요');
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
+
   return (
     <LoginWrapper>
       {inputData.data.map((data, idx) => {
@@ -119,44 +129,4 @@ const LoginWrapper = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-`;
-
-const Input = styled.input`
-  width: 50%;
-  height: 7%;
-  margin-top: 3%;
-  border: solid 1px ${({ theme }) => theme.Color.white};
-  border-radius: 30px;
-  padding: 0 2%;
-
-  &.email {
-    border: solid 1px
-      ${(props) =>
-        props.emailBorder ? 'tomato' : ({ theme }) => theme.Color.lightBlack};
-  }
-
-  &.pw {
-    border: solid 1px
-      ${(props) =>
-        props.pwBorder ? 'tomato' : ({ theme }) => theme.Color.lightBlack};
-  }
-
-  &:focus {
-    outline: ${(props) => (props.outline ? 'none' : '')};
-  }
-`;
-
-const LoginBtn = styled.button`
-  width: 54%;
-  height: 7%;
-  margin-top: 30px;
-  border: solid 1px ${({ theme }) => theme.Color.lightBlack};
-  border-radius: 30px;
-  padding: 0 2%;
-  background-color: #fffef2;
-  cursor: pointer;
-
-  &:focus {
-    outline: none;
-  }
 `;

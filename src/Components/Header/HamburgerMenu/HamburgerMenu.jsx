@@ -10,7 +10,6 @@ const HamburgerMenu = ({ history, name }) => {
   const [hamFocused, setHamFocused] = useState('/');
 
   const handleHamClick = (id) => {
-    history.push(id);
     setHamFocused(id);
     setOpenMenu(false);
   };

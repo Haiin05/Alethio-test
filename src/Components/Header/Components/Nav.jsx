@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
 const MENU_LIST = {
@@ -10,8 +11,23 @@ const MENU_LIST = {
   ],
 };
 
+const LOG_IN_MENU_LIST = {
+  menu: [
+    { id: 1, menuTitle: '서비스', goTo: '/' },
+    { id: 2, menuTitle: '마이페이지', goTo: '/mypage/order' },
+    { id: 3, menuTitle: '로그아웃', goTo: '/logout' },
+  ],
+};
+
 const Nav = ({ history, name, hamFocused, handleHamClick }) => {
+  const { userToken } = useSelector((state) => state.userReducer);
   const [navFocused, setNavFocused] = useState('/');
+  const updatePage = () => {
+    setNavFocused(history.location.pathname);
+  };
+  useEffect(() => {
+    updatePage();
+  }, [history.location.pathname]);
 
   const handleClick = (id) => {
     if (name === 'hamburger') {
@@ -25,7 +41,7 @@ const Nav = ({ history, name, hamFocused, handleHamClick }) => {
 
   return (
     <NavWrapper className={name}>
-      {MENU_LIST.menu.map((menu, idx) => {
+      {(userToken ? LOG_IN_MENU_LIST : MENU_LIST).menu.map((menu, idx) => {
         return (
           <>
             <Menu
