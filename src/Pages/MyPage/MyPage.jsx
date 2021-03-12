@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import MyPageItemList from './Components/MyPageItemList';
 import Pagination from './Components/Pagination';
 import Loading from './Components/Loading';
-import { API, REQRES } from '../../config';
+import { API } from '../../config';
 
 const MyPage = () => {
   const [myData, setMyData] = useState([]);
@@ -14,7 +14,7 @@ const MyPage = () => {
   const [pageArr, setPageArr] = useState([]);
   const [totalPages, setTotalPages] = useState(null);
 
-  const PAGE_URL = `${REQRES}/api/users?page=${currentPage}`;
+  const PAGE_URL = `${API}/order?page=${currentPage}`;
 
   useEffect(() => {
     getData();
@@ -36,7 +36,7 @@ const MyPage = () => {
       let response = await axios(options);
       let responseOK = response && response.status === 200;
       responseOK && setMyData(response.data);
-      setTotalPages(response.data.total_pages);
+      setTotalPages(response.data.totalPages);
       setLoading(false);
     } catch (error) {
       console.error(error);

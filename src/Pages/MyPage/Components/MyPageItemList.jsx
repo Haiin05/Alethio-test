@@ -4,8 +4,7 @@ import Itembox from '../../../Components/Itembox/Itembox';
 import styled from 'styled-components';
 
 const MyPageItemList = ({ history, myData }) => {
-  const myBasketItems = myData?.data;
-
+  const myBasketItems = myData?.content;
   return (
     <MyPageItemListWrapper>
       {myBasketItems?.map((item, idx) => {
@@ -14,7 +13,7 @@ const MyPageItemList = ({ history, myData }) => {
             pathname: `/mypage/order/${id}`,
             state: {
               id: item.id,
-              name: item.first_name,
+              name: item.itemName,
             },
           });
         };
@@ -22,7 +21,7 @@ const MyPageItemList = ({ history, myData }) => {
           <Itembox
             key={idx}
             id={item.id}
-            name={item.first_name}
+            name={item.itemName}
             onClick={() => goToDetail(idx + 1)}
           />
         );

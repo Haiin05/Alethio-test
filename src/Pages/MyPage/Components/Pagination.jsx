@@ -10,7 +10,7 @@ const Pagination = ({ pageArr, setCurrentPage }) => {
     <PaginationWrapper>
       {pageArr?.map((num, idx) => {
         return (
-          <Btn key={idx} onClick={() => goToPage(idx + 1)}>
+          <Btn key={idx} onClick={() => goToPage(idx)}>
             {num + 1}
           </Btn>
         );

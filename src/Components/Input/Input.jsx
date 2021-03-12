@@ -38,7 +38,7 @@ export default withRouter(Inputbox);
 
 const Input = styled.input`
   width: 50%;
-  height: 7%;
+  height: 38px;
   margin-top: 3%;
   border: solid 1px ${({ theme }) => theme.Color.lightBlack};
   border-radius: 30px;
@@ -46,8 +46,7 @@ const Input = styled.input`
 
   &:focus {
     outline: none !important;
-    border-color: #719ece;
-    box-shadow: 0 0 10px #719ece;
+    border: 1px solid ${(props) => (props.outline ? '' : 'tomato')};
   }
 
   &.email {
